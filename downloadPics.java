@@ -141,7 +141,7 @@ public class downloadPics {
 		results.setText("Started at index:" + indx);
 				for (int i = 1; i<n+1 ; i++)
 				{
-					    if (i < 9)
+					    if (i < 10)
 					    {
 					    	outputfile = new File(directory + "/" + indx + "0" + i + ".jpg");
 					    	if(use_zero)
