@@ -31,10 +31,14 @@ public class downloadPics {
 		
 		JTextField pasteN = new JTextField("20");
 		pasteN.setPreferredSize(new Dimension(25,25));
+		
+		JTextField minIndex = new JTextField("0");
+		minIndex.setPreferredSize(new Dimension(25,25));
 	
 		JLabel instructionsURL = new JLabel("URL");
 		JLabel instructionsDirectory = new JLabel("Directory");
 		JLabel instructionsN = new JLabel("Paste number of pics if you don't want 20");
+		JLabel instructionsMinIndex = new JLabel("min index");
 		
 		JTextArea results = new JTextArea();
 		results.setPreferredSize(new Dimension(300,300));
@@ -59,7 +63,7 @@ public class downloadPics {
 			  {
 				  
 				try {
-					startDownload(pasteUrl.getText(),pasteDirectory.getText(),pasteN.getText(), results);
+					startDownload(pasteUrl.getText(),pasteDirectory.getText(),pasteN.getText(), minIndex.getText(),results );
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				} catch (URISyntaxException e1) {
@@ -99,6 +103,9 @@ public class downloadPics {
 		p.add(instructionsN,BorderLayout.LINE_END);
 		p.add(pasteN,BorderLayout.LINE_END);
 		
+		p.add(instructionsMinIndex,BorderLayout.LINE_END);
+		p.add(minIndex,BorderLayout.LINE_END);
+		
 		p.add(start, BorderLayout.PAGE_END);
 		p.add(scrollPane);
 		
@@ -109,13 +116,19 @@ public class downloadPics {
 		gui();
 	}
 	
-	private static void startDownload(String pasteUrl, String pasteDirectory, String pasteN, JTextArea results) throws IOException, URISyntaxException
+	private static void startDownload(String pasteUrl, String pasteDirectory, String pasteN, String minIndex, JTextArea results) throws IOException, URISyntaxException
 	{
 		
 		URL url = new URL(pasteUrl);
 		String directory = pasteDirectory;
+		
 		int n = 20;
-		n = Integer.parseInt(pasteN);
+		if (Integer.parseInt(pasteN) > 1)
+			n = Integer.parseInt(pasteN);
+		
+		int minIndexInt = 0;
+		if(Integer.parseInt(minIndex) > 1)
+			minIndexInt = Integer.parseInt(minIndex);
 		
 		String filename = "nope";
 		String iIndex ="";
@@ -137,7 +150,7 @@ public class downloadPics {
 		if(filename.contains("10001"))
 			specialCase = 2;
 			
-		String indx = getIndex(directory);
+		String indx = getIndex(directory,minIndexInt);
 		results.setText("Started at index:" + indx);
 				for (int i = 1; i<n+1 ; i++)
 				{
@@ -147,7 +160,16 @@ public class downloadPics {
 					    	if(use_zero)
 					    	{
 						    	iIndex = "0" + i;
-						    	iIndexToAdd = "0" + (i+1);
+						    	if (i==9)
+						    	{
+						    		iIndexToAdd = Integer.toString(i+1);
+						    	}
+						    	else
+						    	{
+							    	iIndexToAdd = "0" + (i+1);
+						    	}
+
+
 					    	}
 					    	else
 					    	{
@@ -160,11 +182,6 @@ public class downloadPics {
 				    		outputfile = new File(directory + "/" + indx + i + ".jpg");
 					    	iIndex = Integer.toString(i);
 					    	iIndexToAdd = Integer.toString(i+1);
-					    	if (i==9 && use_zero)
-					    	{
-					    		outputfile = new File(directory + "/" + indx + "0" + i + ".jpg");
-					    		iIndex = "0" + Integer.toString(i);
-					    	}
 					    }
 						URL readIn = new URL(path + filename);
 						old_name = filename;
@@ -204,11 +221,15 @@ public class downloadPics {
 		
 	}
 	
-	private static String getIndex(String directory)
+	private static String getIndex(String directory, int min)
 	{
 		int count = 1;
 		boolean notFound = true;
-		String indx = "01";
+		String indx;
+		if (min >=10)
+			indx = Integer.toString(count);
+		else
+			indx = 0 + Integer.toString(count);
 		while(notFound)
 		{
 			if (count >=10)

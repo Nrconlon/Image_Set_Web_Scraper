@@ -25,6 +25,7 @@ public class downloadImageThread implements Runnable{
  
     public void run()
     {
+    	//you could make it so it grabs the numbers from the right.
     	try {
 			Image image = ImageIO.read(readIn);
 			if(image == null){
